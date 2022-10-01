@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
@@ -7,8 +8,12 @@ import { Component } from '@angular/core';
 })
 export class NavComponent {
 
-  constructor() { }
+  constructor(private router : Router) { }
 
   public isCollapsed = true;
+
+  public showMenu(): boolean {
+    return this.router.url !== '/user/login';
+  }
 
 }

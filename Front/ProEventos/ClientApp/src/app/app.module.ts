@@ -12,7 +12,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { ToastrModule } from 'ngx-toastr';
 
 import { AppComponent } from './app.component';
-import { NavComponent } from './components/nav/nav.component';
+import { NavComponent } from './shared/nav/nav.component';
 import { EventoComponent } from './components/evento/evento.component';
 import { PalestranteComponent } from './components/palestrante/palestrante.component';
 import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
@@ -21,7 +21,12 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ContatosComponent } from './components/contatos/contatos.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
+import { UserComponent } from './components/user/user.component';
 import { TituloComponent } from './shared/titulo/titulo.component';
+import { EventoDetalhesComponent } from './components/evento/evento-detalhes/evento-detalhes.component';
+import { EventoListaComponent } from './components/evento/evento-lista/evento-lista.component';
+import { LoginComponent } from './components/user/login/login.component';
+import { RegistrationComponent } from './components/user/registration/registration.component';
 
 @NgModule({
   declarations: [
@@ -34,31 +39,51 @@ import { TituloComponent } from './shared/titulo/titulo.component';
     PalestranteComponent,
     TituloComponent,
     DateTimeFormatPipe,
+    EventoDetalhesComponent,
+    EventoListaComponent,
+    UserComponent,
+    LoginComponent,
+    RegistrationComponent,
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-    HttpClientModule,
-    FormsModule,
     RouterModule.forRoot([
-      { path: 'eventos', component: EventoComponent },
+      {
+        path: 'user', component: UserComponent,
+        children: [
+          { path: 'login', component: LoginComponent },
+          { path: 'registration', component: RegistrationComponent },
+        ]
+      },
+      { path: 'user/perfil', component: PerfilComponent },
+      { path: 'eventos', redirectTo: 'eventos/lista' },
+      {
+        path: 'eventos', component: EventoComponent,
+        children: [
+          { path: 'detalhes/:id', component: EventoDetalhesComponent },
+          { path: 'detalhes', component: EventoDetalhesComponent },
+          { path: 'lista', component: EventoListaComponent },
+        ]
+      },
       { path: 'palestrantes', component: PalestranteComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'contatos', component: ContatosComponent },
-      { path: 'perfil', component: PerfilComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ]),
-    BrowserAnimationsModule,
-    CollapseModule.forRoot(),
-    TooltipModule.forRoot(),
-    BsDropdownModule.forRoot(),
-    ModalModule.forRoot(),
     ToastrModule.forRoot({
       timeOut: 4000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
       progressBar: true
     }),
+    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    CollapseModule.forRoot(),
+    TooltipModule.forRoot(),
+    BsDropdownModule.forRoot(),
+    ModalModule.forRoot(),
     NgxSpinnerModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
