@@ -10,7 +10,7 @@ export interface Evento {
   qtdPessoas: number;
   imagemURL: string;
   telefone: string;
-  rmail: string;
+  email: string;
   lotes: Lote[];
   redesSociais: RedeSocial[];
   palestrantesEventos: Palestrante[];

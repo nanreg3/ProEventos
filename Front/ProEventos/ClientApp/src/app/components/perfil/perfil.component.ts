@@ -1,9 +1,6 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, TemplateRef } from '@angular/core';
-import { EventoService } from '../../services/evento.service';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from "ngx-spinner";
+import { Component } from '@angular/core';
+import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ValidadorCampo } from '../../helpers/ValidadorCampo';
 
 @Component({
   selector: 'app-perfil',
@@ -12,71 +9,38 @@ import { NgxSpinnerService } from "ngx-spinner";
 })
 export class PerfilComponent {
 
-  constructor(
-    private eventoService: EventoService,
-    private modalService: BsModalService,
-    private toastr: ToastrService,
-    private spinner: NgxSpinnerService,
-  ) {
-    this.getEventos();
+  public form: FormGroup;
 
+  get f(): any {
+    return this.form.controls;
   }
 
-  public eventos: any = [];
-  public eventosFiltrados: any = [];
-  public widthImg: number = 120;
-  public marginImg: number = 2;
-  public isCollapsed = true;
-  public _filtro: string = '';
-  public modalRef?: BsModalRef;
-
-  public get filtro(): string {
-    return this._filtro;
-  }
-  public set filtro(value: string){
-    this._filtro = value;
-    this.eventosFiltrados = (this._filtro ? this.Filtrar(this._filtro) : this.eventos)
-  }
-  public Filtrar(filtrarPor: string): any {
-    filtrarPor = filtrarPor.toLocaleLowerCase();
-    return this.eventos.filter(
-      evento => evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1
-        || evento.local.toLocaleLowerCase().indexOf(filtrarPor) !== -1
-    )
+  constructor(private fb: FormBuilder) {
+    this.validation();
   }
 
-  public getEventos() {
-    this.eventoService.getEventos().subscribe(
-      x => {
-        this.spinner.show();
-        this.eventos = x;
-        this.eventosFiltrados = this.eventos;
-      },
-      e => {
-        console.error(e);
-        this.spinner.hide();
-        this.toastr.error('Erro ao carregar os Eventos.', 'Erro!');
-      },
-      () => this.spinner.hide()
-    )
+  private validation(): void {
+
+    const formOptions: AbstractControlOptions = {
+      validators: ValidadorCampo.deveCombinar('senha', 'confirmSenha')
+    };
+
+    this.form = this.fb.group({
+      titulo: ['', [Validators.required]],
+      primeiroNome: ['', [Validators.required]],
+      ultimoNome: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      telefone: ['', [Validators.required]],
+      funcao: ['', [Validators.required]],
+      descricao: ['', [Validators.required]],
+      senha: ['', [Validators.required, Validators.minLength(6)]],
+      confirmSenha: ['', [Validators.required]],
+    }, formOptions);
   }
 
-  openModal(template: TemplateRef<any>) {
-    this.modalRef = this.modalService.show(template, { class: 'modal-sm' });
-  }
-
-  confirm(): void {
-    this.modalRef.hide();
-    this.showSuccess();
-  }
-
-  decline(): void {
-    this.modalRef.hide();
-    this.toastr.info('Evento NÃO deletado.', 'Cancelado!');
-  }
-
-  showSuccess() {
-    this.toastr.success('Evento deletado com sucesso.', 'Deletado!');
+  public resetForm(event: any): void {
+    event.preventDefault();
+    this.form.reset();
   }
 
 }
