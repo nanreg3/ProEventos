@@ -7,7 +7,7 @@ namespace ProEventos.Persistence.EventoPersist
     {
         Task<Evento[]> GetAllEventosByTemaAsync(string Tema, bool IncludePalestrantes = false);
         Task<Evento[]> GetAllEventosAsync(bool IncludePalestrantes = false);
-        Task<Evento> GetEventoByIdAsync(int EventoId, bool IncludePalestrantes = false);
+        Task<Evento> GetEventoByIdAsync(int eventoId, bool includePalestrantes = false);
 
     }
 }

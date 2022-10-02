@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProEventos.Domain.Models
 {
@@ -17,5 +19,16 @@ namespace ProEventos.Domain.Models
         public IEnumerable<RedeSocial> RedesSociais { get; set; }
         public IEnumerable<PalestranteEvento> PalestrantesEventos { get; set; }
 
+        //DataAnnotations:
+
+        //[ForeignKey("NOME_DA_OUTRA_TABELA")]
+        //public int IdPalestrantes { get; set; }
+
+        //propriedade que nao será criada no banco.
+        //[NotMapped]
+        //public int qdtDeDias { get; set; }
+
+        //Tamanho de caracter da coluna no banco:
+        //[MaxLength(50)]
     }
 }

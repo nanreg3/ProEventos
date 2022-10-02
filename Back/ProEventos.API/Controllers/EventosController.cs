@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProEventos.Domain.Models;
 using ProEventos.Application.EventoService;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using Microsoft.AspNetCore.Http;
+using ProEventos.Application.Dtos;
 
 namespace ProEventos.Controllers
 {
@@ -15,34 +15,36 @@ namespace ProEventos.Controllers
     public class EventoController : ControllerBase
     {
         private readonly IEventoService _eventoService;
-        public EventoController(IEventoService eventoService )
+        public EventoController(IEventoService eventoService)
         {
             _eventoService = eventoService;
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get(bool IncludePalestrantes)
+        public async Task<ActionResult> Get()
         {
             try
             {
-            var eventos = await _eventoService.GetAllEventosAsync(IncludePalestrantes);
-                if (eventos == null) return NotFound("Nenhum evento encontrado.");
-            return Ok(eventos);
+                var eventos = await _eventoService.GetAllEventosAsync(true);
+                if (eventos == null) return NoContent();
+
+                return Ok(eventos);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError,
                     $"Erro ao tentar recuperar os eventos {ex.Message}");
             }
         }
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id, bool IncludePalestrantes)
         {
             try
             {
                 var evento = await _eventoService.GetEventoByIdAsync(id, IncludePalestrantes);
-                if ( evento == null) return NotFound("Evento não encontrado.");
+                if (evento == null) return NoContent();
+
                 return Ok(evento);
             }
             catch (Exception ex)
@@ -51,14 +53,14 @@ namespace ProEventos.Controllers
                     $"Erro ao tentar recuperar o evento {ex.Message}");
             }
         }
-        
+
         [HttpGet("tema/{tema}")]
         public async Task<IActionResult> GetByTema(string tema, bool IncludePalestrantes)
         {
             try
             {
                 var evento = await _eventoService.GetAllEventosByTemaAsync(tema, IncludePalestrantes);
-                if ( evento == null) return NotFound("Eventos por tema não encontrados.");
+                if (evento == null) return NoContent();
                 return Ok(evento);
             }
             catch (Exception ex)
@@ -69,12 +71,12 @@ namespace ProEventos.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Evento model)
+        public async Task<IActionResult> Post(EventoDto model)
         {
             try
             {
                 var evento = await _eventoService.AddEvento(model);
-                if (evento == null) return BadRequest("Não foi possivel adicionar o evento.");
+                if (evento == null) return NoContent();
                 return Ok(evento);
             }
             catch (Exception ex)
@@ -85,14 +87,20 @@ namespace ProEventos.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Evento model)
+        public async Task<IActionResult> Put(int id, EventoDto model)
         {
-
+            try
+            {
                 var evento = await _eventoService.UpdateEvento(id, model);
-                if (evento == null) 
-                    return BadRequest("Não foi possivel alterar o evento.");
-                return Ok(evento);
+                if (evento == null) return NoContent();
 
+                return Ok(evento);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Erro ao tentar atualizar eventos. Erro: {ex.Message}");
+            }
         }
 
         [HttpDelete("{id}")]
