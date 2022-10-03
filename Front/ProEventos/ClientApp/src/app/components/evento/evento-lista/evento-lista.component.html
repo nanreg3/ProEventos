@@ -35,11 +35,11 @@
         <td class="d-none d-md-table-cell"> <img src="/assets/{{item.imagemURL}}" [collapse]="isCollapsed" [isAnimated]="true" [style.width.px]="widthImg" [style.margin.px]="marginImg" /> </td>
         <td>{{item.id}}</td>
         <td>{{item.tema}}</td>
-        <td class="d-none d-md-table-cell">{{item.data | DateTimePipe}}</td>
+        <td class="d-none d-md-table-cell">{{item.data}}</td>
         <td class="d-none d-md-table-cell">{{item.qtdPessoas}}</td>
         <td>{{item.local}}</td>
         <td>
-          <button (click)="openModal(template)" class="btn btn-danger btn-sm" tooltip="Excluir">
+          <button (click)="openModal($event, template, item.id)" class="btn btn-danger btn-sm" tooltip="Excluir">
             Excluir
           </button>
         </td>
@@ -57,7 +57,7 @@
 
 <ng-template #template>
   <div class="modal-body text-center">
-    <p>Tem certeza que quer Deletar esse Evento?</p>
+    <p>Tem certeza que quer Deletar o Evento {{eventoId}}?</p>
     <button type="button" class="btn btn-danger" (click)="confirm()">Sim</button>
     <button type="button" class="btn btn-primary" (click)="decline()">Não</button>
   </div>
