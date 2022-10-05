@@ -11,12 +11,14 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { ToastrModule } from 'ngx-toastr';
 
+import { LoteService } from './services/lote.service';
+import { EventoService } from './services/evento.service';
+
 import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav/nav.component';
 import { EventoComponent } from './components/evento/evento.component';
 import { PalestranteComponent } from './components/palestrante/palestrante.component';
 import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
-import { EventoService } from './services/evento.service';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ContatosComponent } from './components/contatos/contatos.component';
@@ -88,7 +90,9 @@ import { RegistrationComponent } from './components/user/registration/registrati
     NgxSpinnerModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [EventoService],
+  providers: [
+    EventoService,
+    LoteService  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
