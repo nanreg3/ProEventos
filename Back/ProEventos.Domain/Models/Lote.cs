@@ -11,7 +11,7 @@ namespace ProEventos.Domain.Models
         public DateTime Inicio { get; set; }
         public DateTime Fim { get; set; }
         public int? Quantidade { get; set; }
-        public int? EventoId { get; set; }
+        public int EventoId { get; set; }
         public Evento Evento { get; set; }
 
     }

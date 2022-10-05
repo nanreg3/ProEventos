@@ -16,6 +16,7 @@ using ProEventos.Application.EventoService;
 using ProEventos.Persistence.GeralPersist;
 using ProEventos.Persistence.EventoPersist;
 using AutoMapper;
+using ProEventos.Application.LoteService;
 
 namespace ProEventos.API
 {
@@ -42,8 +43,12 @@ namespace ProEventos.API
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IEventoService, EventoService>();
-            services.AddScoped<IGeralPersist, GeralPersist>();
             services.AddScoped<IEventoPersist, EventoPersist>();
+
+            services.AddScoped<ILoteService, LoteService>();
+            services.AddScoped<ILotePersist, LotePersist>();
+
+            services.AddScoped<IGeralPersist, GeralPersist>();
 
             services.AddCors();
 

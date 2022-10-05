@@ -9,20 +9,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProEventos.Application.EventoService
+namespace ProEventos.Application.LoteService
 {
     public class LoteService : ILoteService
     {
         private readonly IGeralPersist _geralPersist;
         private readonly ILotePersist _lotePersist;
         private readonly IMapper _mapper;
-
+        
+        //injeção das dependencias:
         public LoteService(IGeralPersist geralPersist, ILotePersist lotePersist, IMapper mapper)
         {
             _geralPersist = geralPersist;
             _lotePersist = lotePersist;
             _mapper = mapper;
         }
+
+        //FUNCAO QUE IRA POSTAR O LOTE
+        public async Task AddLotes(int eventoId, LoteDto model)
+        {
+            try
+            {
+                //MAPEAMANTO DE "LoteDto" para "Lote", pois o "_geralPersist" trabalha com o tipo "Lote"
+                var lote = _mapper.Map<Lote>(model);
+                lote.EventoId = eventoId;
+
+                _geralPersist.Add<Lote>(lote);
+
+                await _geralPersist.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        //FUNCAO QUE IRA POSTAR OS LOTES
+        public async Task AlterarLotes(int eventoId, LoteDto model)
+        {
+            try
+            {
+                //MAPEAMANTO DE "LoteDto" para "Lote", pois o "_geralPersist" trabalha com o tipo "Lote"
+                var lote = _mapper.Map<Lote>(model);
+                lote.EventoId = eventoId;
+
+                _geralPersist.Update<Lote>(lote);
+
+                await _geralPersist.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         public async Task<LoteDto[]> SaveLotes(int eventoId, LoteDto[] models)
         {
             try
@@ -32,26 +72,28 @@ namespace ProEventos.Application.EventoService
 
                 foreach (var model in models)
                 {
+                    //VERIFICAÇÃO SE EXISTE O ID DO LOTE, POIS NAO EXISTIR, IRÁ PARA O POST(ADD),
+                    //SE EXISTIR, IRÁ PULAR PARA O PUT(UPDATE).
                     if(model.Id == 0)
                     {
-
+                        //IRA CHAMAR A FUNCAO QUE IRA POSTAR OS LOTES
+                        await AddLotes(eventoId, model);
                     }
                     else
                     {
-                        var lote = lotes.FirstOrDefault(lote => lote.Id == model.Id);
-                        model.Id = lote.Id;
-
-                        _mapper.Map(model, lote);
-
-                        _geralPersist.Update<Lote>(lote);
-
-                        await _geralPersist.SaveChangesAsync();
+                        //IRA CHAMAR A FUNCAO QUE IRA ALTERAR OS LOTES
+                        await AlterarLotes(eventoId, model);
                     }
                 }
 
                 var loteRetorno = await _lotePersist.GetLotesByEventoIdAsync(eventoId);
 
-                return _mapper.Map<LoteDto[]>(loteRetorno);
+                //MAPEAMANTO DE "Lote" para "LoteDto", pois o será RETORNADO para o controller o tipo LotoDto.
+                var resultado = _mapper.Map<LoteDto[]>(loteRetorno);
+
+                //RETORNO JA MAPEADO(CONVERTIDO) PARA LoteDto.
+                return resultado;
+
             }
             catch (Exception ex)
             {
@@ -75,15 +117,17 @@ namespace ProEventos.Application.EventoService
             }
         }
 
-        public async Task<LoteDto[]> GetLoteByEventoIdAsync(int eventoId)
+        public async Task<LoteDto[]> GetLotesByEventoIdAsync(int eventoId)
         {
             try
             {
                 var lotes = await _lotePersist.GetLotesByEventoIdAsync(eventoId);
                 if (lotes == null) return null;
 
+                //MAPEAMANTO DE "Lote" para "LoteDto", pois o será RETORNADO para o controller o tipo LotoDto.
                 var resultado = _mapper.Map<LoteDto[]>(lotes);
 
+                //RETORNO JA MAPEADO(CONVERTIDO) PARA LoteDto.
                 return resultado;
             }
             catch (Exception ex)
@@ -99,8 +143,10 @@ namespace ProEventos.Application.EventoService
                 var lote = await _lotePersist.GetLotesByIdsAsync(eventoId, loteId);
                 if (lote == null) return null;
 
+                //MAPEAMANTO DE "Lote" para "LoteDto", pois o será RETORNADO para o controller o tipo LotoDto.
                 var resultado = _mapper.Map<LoteDto>(lote);
 
+                //RETORNO JA MAPEADO(CONVERTIDO) PARA LoteDto.
                 return resultado;
             }
             catch (Exception ex)
